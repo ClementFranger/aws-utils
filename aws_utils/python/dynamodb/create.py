@@ -1,8 +1,7 @@
 import json
 import logging
 import boto3
-from aws_utils.utils import DecimalEncoder, success, failure, validate_params
-
+from utils import DecimalEncoder, success, failure, validate_params
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
