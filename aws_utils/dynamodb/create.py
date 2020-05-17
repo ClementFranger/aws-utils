@@ -10,7 +10,7 @@ logger.setLevel(logging.INFO)
 client = boto3.resource('dynamodb')
 
 
-def create_reminder(event, context, table):
+def create(event, context, table):
     logger.info('event : {event}'.format(event=event))
     body, = validate_params(body=event.get('body'))
 
