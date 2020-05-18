@@ -17,8 +17,10 @@ def validate_params(**kwargs):
 
 def success(**kwargs):
     status_code = kwargs.get('status_code', 200)
+    # TODO : ADD CLIENT DOMAIN WHEN IN PRODUCTION
+    headers = kwargs.get('headers', {'Access-Control-Allow-Origin': '*'})
     body = kwargs.get('body') if isinstance(kwargs.get('body'), str) else str(kwargs.get('body'))
-    return {"statusCode": status_code, "body": body}
+    return {"statusCode": status_code, "headers": headers, "body": body}
 
 
 def failure(**kwargs):
