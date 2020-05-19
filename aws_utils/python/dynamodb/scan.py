@@ -1,6 +1,9 @@
 import json
 import logging
+from functools import reduce
+
 import boto3
+from boto3.dynamodb.conditions import Attr
 
 from utils import DecimalEncoder, success, failure, validate_params
 
@@ -11,19 +14,16 @@ client = boto3.resource('dynamodb')
 
 
 def scan(event, context, **kwargs):
-    logger.info('event : {event}'.format(event=event))
-    # path, = validate_params(path=event.get('pathParameters'))
-
-    # id = path.get('id')
-    # if not id:
-    #     return failure(code=400, body='You should provide a id to your path parameters')
-
-    params = {
-        'TableName': kwargs.get('table')
-    }
-
-    if kwargs.get('filter'):
-        params.update({'FilterExpression': kwargs.get('filter')})
+    # logger.info('event : {event}'.format(event=event))
+    # body, = validate_params(body=event.get('body'))
+    #
+    # body = json.loads(body) if isinstance(body, str) else body
+    #
+    # params = {'TableName': kwargs.get('table')}
+    #
+    # if body and body.get('filter'):
+    #     params.update({'FilterExpression': reduce(lambda a, b: a & b, [Attr(k).eq(v) for k, v in body.get('filter').items])})
+    params = kwargs.get('params')
 
     logger.info('Getting all items')
 

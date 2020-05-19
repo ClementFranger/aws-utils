@@ -9,20 +9,21 @@ logger.setLevel(logging.INFO)
 client = boto3.resource('dynamodb')
 
 
-def get(event, context, table):
-    logger.info('event : {event}'.format(event=event))
-    path, = validate_params(path=event.get('pathParameters'))
+def get(event, context, **kwargs):
+    # logger.info('event : {event}'.format(event=event))
+    # path, = validate_params(path=event.get('pathParameters'))
+    #
+    # id = path.get('id')
+    # if not id:
+    #     return failure(code=400, body='You should provide a id to your path parameters')
+    #
+    # params = {
+    #     'TableName': table,
+    #     'Key': {'id': id}
+    # }
+    key, params = kwargs.get('key'), kwargs.get('params')
 
-    id = path.get('id')
-    if not id:
-        return failure(code=400, body='You should provide a id to your path parameters')
-
-    params = {
-        'TableName': table,
-        'Key': {'id': id}
-    }
-
-    logger.info('Getting item {id}'.format(id=id))
+    logger.info('Getting item {key}'.format(key=key))
 
     try:
         result = client.Table(params.get('TableName')).get_item(**params)
@@ -31,5 +32,5 @@ def get(event, context, table):
     except Exception as e:
         return failure(body=e)
 
-    logger.info('Retrieved item {id}'.format(id=id))
+    logger.info('Retrieved item {key}'.format(key=key))
     return success(body=json.dumps(result.get('Item'), cls=DecimalEncoder))
