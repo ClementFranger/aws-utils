@@ -52,24 +52,24 @@ def load_payload(f):
 
 
 def check_payload(id):
-    def decorator(event):
-        @wraps(event)
+    def decorator(f):
+        @wraps(f)
         def wrapper(*args, **kwargs):
             if kwargs.get('body') and not kwargs.get('body').get(id):
                 return failure(code=400, body='You should provide a {id} key to your body'.format(id=id))
             if kwargs.get('path') and not kwargs.get('path').get(id):
                 return failure(code=400, body='You should provide a {id} key to your pathParameters'.format(id=id))
-            return event(*args, **kwargs)
+            return f(*args, **kwargs)
         return wrapper
     return decorator
 
 
 def cors(ips):
-    def decorator(event):
-        @wraps(event)
-        def wrapper(*args, **kwargs):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(event, *args, **kwargs):
             logger.info('event : {event}'.format(event=event))
-            return event(*args, **kwargs)
+            return f(*args, **kwargs)
         return wrapper
     return decorator
 
