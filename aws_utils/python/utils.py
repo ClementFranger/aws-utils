@@ -67,9 +67,11 @@ def check_payload(id):
 def cors(ips):
     def decorator(f):
         @wraps(f)
-        def wrapper(event, *args, **kwargs):
+        def wrapper(event, context, *args, **kwargs):
             logger.info('event : {event}'.format(event=event))
-            return f(*args, **kwargs)
+            if event.get('origin') in ips:
+                kwargs.update({'headers': {'Access-Control-Allow-Origin': event.get('origin')}})
+            return f(event, context, *args, **kwargs)
         return wrapper
     return decorator
 
