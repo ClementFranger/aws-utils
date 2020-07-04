@@ -1,5 +1,6 @@
 import decimal
 import json
+from functools import wraps
 
 
 class DecimalEncoder(json.JSONEncoder):
@@ -9,6 +10,50 @@ class DecimalEncoder(json.JSONEncoder):
         if isinstance(o, decimal.Decimal):
             return str(o)
         return super(DecimalEncoder, self).default(o)
+
+
+def handle_request(request):
+    @wraps(request)
+    def wrapper(self, *args, **kwargs):
+        try:
+            response = request(self, *args, **kwargs)
+        except Exception as e:
+            return failure(body=e)
+        return response
+    return wrapper
+
+
+def output_request(request):
+    @wraps(request)
+    def wrapper(self, *args, **kwargs):
+        response = request(self, *args, **kwargs)
+        try:
+            response = response.json()
+        except Exception as e:
+            return failure(body=e)
+        return response
+    return wrapper
+
+
+def validate_request(request):
+    @wraps(request)
+    def wrapper(*args, **kwargs):
+        kwargs.update({k: v if v is not None else dict() for k, v in kwargs.items()})
+        # [v if v is not None else dict() for v in kwargs.values()]
+        return request(*args, **kwargs)
+    return wrapper
+
+
+def load_body(f):
+    @wraps(f)
+    def wrapper(event, *args, **kwargs):
+        try:
+            body = json.loads(event.get('body'))
+            kwargs.update({'body': body})
+        except TypeError as e:
+            return failure(body='Error when parsing body : {e}'.format(e=e))
+        return f(event, *args, **kwargs)
+    return wrapper
 
 
 def validate_params(**kwargs):
