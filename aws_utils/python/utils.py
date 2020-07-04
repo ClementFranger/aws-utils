@@ -56,6 +56,17 @@ def load_body(f):
     return wrapper
 
 
+def check_body_id(id):
+    def decorator(event):
+        @wraps(event)
+        def wrapper(*args, **kwargs):
+            if not kwargs.get('body').get(id):
+                return failure(code=400, body='You should provide a {id} key to your body'.format(id=id))
+            return event(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
 def validate_params(**kwargs):
     return [v if v is not None else dict() for v in kwargs.values()]
 
