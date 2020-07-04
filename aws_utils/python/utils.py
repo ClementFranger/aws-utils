@@ -39,29 +39,6 @@ def to_json(f):
     return wrapper
 
 
-# def aws_output(*args, **kwargs):
-#     def decorator(f):
-#         @wraps(f)
-#         def wrapper(self):
-#             response = f(self, *args, **kwargs)
-#             # response = response if isinstance(response, str) else str(response)
-#             # TODO : ADD CLIENT DOMAIN WHEN IN PRODUCTION
-#             return {"statusCode": kwargs.get('status_code', 200),
-#                     "headers": kwargs.get('headers'),
-#                     "body": json.dumps(response, cls=DecimalEncoder)}
-#         return wrapper
-#     return decorator
-
-
-def validate_request(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        kwargs.update({k: v if v is not None else dict() for k, v in kwargs.items()})
-        # [v if v is not None else dict() for v in kwargs.values()]
-        return f(*args, **kwargs)
-    return wrapper
-
-
 def load_payload(f):
     @wraps(f)
     def wrapper(event, *args, **kwargs):
@@ -88,16 +65,9 @@ def check_payload(id):
     return decorator
 
 
-def validate_params(**kwargs):
-    return [v if v is not None else dict() for v in kwargs.values()]
-
-
 def success(**kwargs):
-    # body = kwargs.get('body') if isinstance(kwargs.get('body'), str) else str(kwargs.get('body'))
-    # TODO : ADD CLIENT DOMAIN WHEN IN PRODUCTION
     return {"statusCode": kwargs.get('status_code', 200), "headers": kwargs.get('headers'), "body": json.dumps(kwargs.get('body'), cls=DecimalEncoder)}
 
 
 def failure(**kwargs):
-    # body = kwargs.get('body') if isinstance(kwargs.get('body'), str) else str(kwargs.get('body'))
     return {"statusCode": kwargs.get('status_code', 500), "body": kwargs.get('body')}
