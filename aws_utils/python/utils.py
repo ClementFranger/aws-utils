@@ -42,7 +42,6 @@ def to_json(f):
 def load_payload(f):
     @wraps(f)
     def wrapper(event, *args, **kwargs):
-        logger.info('event : {event}'.format(event=event))
         try:
             body = json.loads(event.get('body')) if event.get('body') else dict()
             kwargs.update({'body': body, 'path': event.get('pathParameters'), 'query': event.get('queryStringParameters')})
@@ -60,6 +59,16 @@ def check_payload(id):
                 return failure(code=400, body='You should provide a {id} key to your body'.format(id=id))
             if kwargs.get('path') and not kwargs.get('path').get(id):
                 return failure(code=400, body='You should provide a {id} key to your pathParameters'.format(id=id))
+            return event(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def cors(ips):
+    def decorator(event):
+        @wraps(event)
+        def wrapper(*args, **kwargs):
+            logger.info('event : {event}'.format(event=event))
             return event(*args, **kwargs)
         return wrapper
     return decorator
