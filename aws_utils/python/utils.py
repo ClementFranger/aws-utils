@@ -66,13 +66,9 @@ def load_payload(f):
     @wraps(f)
     def wrapper(event, *args, **kwargs):
         logger.info('event : {event}'.format(event=event))
-        print(type(event.get('pathParameters')))
         try:
-            body, path, query = [json.loads(p) if p else dict() for p in
-                                 [event.get('body'), event.get('pathParameters'), event.get('queryStringParameters')]]
-            kwargs.update({'body': body, 'path': path, 'query': query})
-
-            print(kwargs)
+            body = json.loads(event.get('body')) if event.get('body') else dict()
+            kwargs.update({'body': body, 'path': event.get('pathParameters'), 'query': event.get('queryStringParameters')})
         except TypeError as e:
             raise TypeError('Error when parsing body : {e}'.format(e=e))
         return f(event, *args, **kwargs)
