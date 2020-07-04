@@ -1,6 +1,10 @@
+import logging
 import decimal
 import json
 from functools import wraps
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 class DecimalEncoder(json.JSONEncoder):
@@ -61,6 +65,8 @@ def validate_request(f):
 def load_payload(f):
     @wraps(f)
     def wrapper(event, *args, **kwargs):
+        logger.info('event : {event}'.format(event=event))
+        print(type(event.get('pathParameters')))
         try:
             body, path, query = [json.loads(p) if p else dict() for p in
                                  [event.get('body'), event.get('pathParameters'), event.get('queryStringParameters')]]
