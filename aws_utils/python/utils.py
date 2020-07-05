@@ -71,6 +71,7 @@ def cors(ips):
             logger.info('event : {event}'.format(event=event))
             if event.get('origin') in ips:
                 kwargs.update({'headers': {'Access-Control-Allow-Origin': event.get('origin')}})
+            print(kwargs)
             return f(event, context, *args, **kwargs)
         return wrapper
     return decorator
