@@ -1,6 +1,7 @@
 import logging
 import decimal
 import json
+import re
 from functools import wraps
 
 logger = logging.getLogger(__name__)
@@ -44,7 +45,8 @@ def load_payload(f):
     def wrapper(event, *args, **kwargs):
         try:
             body = json.loads(event.get('body')) if event.get('body') else dict()
-            kwargs.update({'body': body, 'path': event.get('pathParameters'), 'query': event.get('queryStringParameters')})
+            kwargs.update(
+                {'body': body, 'path': event.get('pathParameters'), 'query': event.get('queryStringParameters')})
         except TypeError as e:
             raise TypeError('Error when parsing body : {e}'.format(e=e))
         return f(event, *args, **kwargs)
@@ -69,16 +71,16 @@ def cors(ips):
         @wraps(f)
         def wrapper(event, context, *args, **kwargs):
             logger.info('event : {event}'.format(event=event))
-            if event.get('origin') in ips:
-                kwargs.update({'headers': {'Access-Control-Allow-Origin': event.get('origin')}})
-            print(kwargs)
+            if re.compile(ips).match(event.get('headers').get('origin')):
+                kwargs.update({'headers': {'Access-Control-Allow-Origin': event.get('headers').get('origin')}})
             return f(event, context, *args, **kwargs)
         return wrapper
     return decorator
 
 
 def success(**kwargs):
-    return {"statusCode": kwargs.get('status_code', 200), "headers": kwargs.get('headers'), "body": json.dumps(kwargs.get('body'), cls=DecimalEncoder)}
+    return {"statusCode": kwargs.get('status_code', 200), "headers": kwargs.get('headers'),
+            "body": json.dumps(kwargs.get('body'), cls=DecimalEncoder)}
 
 
 def failure(**kwargs):
