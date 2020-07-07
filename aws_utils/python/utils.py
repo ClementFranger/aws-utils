@@ -17,15 +17,15 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
-def request(f):
-    @wraps(f)
-    def wrapper(self, *args, **kwargs):
-        try:
-            response = f(self, *args, **kwargs)
-        except Exception as e:
-            raise e
-        return response
-    return wrapper
+# def request(f):
+#     @wraps(f)
+#     def wrapper(self, *args, **kwargs):
+#         try:
+#             response = f(self, *args, **kwargs)
+#         except Exception as e:
+#             raise e
+#         return response
+#     return wrapper
 
 
 def to_json(f):
@@ -42,14 +42,14 @@ def to_json(f):
 
 def load_payload(f):
     @wraps(f)
-    def wrapper(event, *args, **kwargs):
+    def wrapper(self, event, *args, **kwargs):
         try:
             body = json.loads(event.get('body')) if event.get('body') else dict()
             kwargs.update(
                 {'body': body, 'path': event.get('pathParameters'), 'query': event.get('queryStringParameters')})
         except TypeError as e:
             raise TypeError('Error when parsing body : {e}'.format(e=e))
-        return f(event, *args, **kwargs)
+        return f(self, event, *args, **kwargs)
     return wrapper
 
 
@@ -71,8 +71,6 @@ def cors(ips):
         @wraps(f)
         def wrapper(event, context, *args, **kwargs):
             logger.info('event : {event}'.format(event=event))
-            print(event.get('headers').get('origin'))
-            print([re.compile(ip).match(event.get('headers').get('origin')) for ip in ips])
             if any(re.compile(ip).match(event.get('headers').get('origin')) for ip in ips):
                 kwargs.update({'headers': {'Access-Control-Allow-Origin': event.get('headers').get('origin')}})
             return f(event, context, *args, **kwargs)
