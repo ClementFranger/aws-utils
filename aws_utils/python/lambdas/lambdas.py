@@ -3,6 +3,8 @@ import logging
 import re
 from functools import wraps
 
+from utils import DecimalEncoder
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -16,7 +18,7 @@ class Lambdas(object):
             def wrapper(*args, **kwargs):
                 result = f(*args, **kwargs)
                 return {'statusCode': result.get('ResponseMetadata').get('HTTPStatusCode'),
-                        'headers': kwargs.get('headers'), 'body': json.dumps(result)}
+                        'headers': kwargs.get('headers'), 'body': json.dumps(result, cls=DecimalEncoder)}
             return wrapper
 
         @classmethod
