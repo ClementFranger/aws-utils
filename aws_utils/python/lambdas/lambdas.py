@@ -46,6 +46,7 @@ class Lambdas(object):
             def decorator(f):
                 @wraps(f)
                 def wrapper(event, *args, **kwargs):
+                    logger.info('Incoming event : {event}'.format(event=event))
                     if any(re.compile(ip).match(event.get('headers').get('origin')) for ip in ips):
                         kwargs.update({'headers': {'Access-Control-Allow-Origin': event.get('headers').get('origin')}})
                     return f(event, *args, **kwargs)
