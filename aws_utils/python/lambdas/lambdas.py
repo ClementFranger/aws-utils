@@ -62,8 +62,6 @@ class Lambdas(object):
                 @wraps(f)
                 def wrapper(event, *args, **kwargs):
                     result = f(event, *args, **kwargs)
-                    print(result)
-                    print(type(result))
                     return result[:length]
                 return wrapper
             return decorator
