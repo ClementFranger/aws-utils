@@ -55,3 +55,15 @@ class Lambdas(object):
                     return f(event, *args, **kwargs)
                 return wrapper
             return decorator
+
+        @classmethod
+        def limit(cls, length=10):
+            def decorator(f):
+                @wraps(f)
+                def wrapper(event, *args, **kwargs):
+                    result = f(event, *args, **kwargs)
+                    print(result)
+                    print(type(result))
+                    return result[:length]
+                return wrapper
+            return decorator
