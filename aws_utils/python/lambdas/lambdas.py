@@ -39,7 +39,10 @@ class Lambdas(object):
             return decorator
 
         @classmethod
-        def cors(cls, ips):
+        def cors(cls, ips=None):
+            if ips is None:
+                ips = []
+
             def decorator(f):
                 @wraps(f)
                 def wrapper(event, *args, **kwargs):
