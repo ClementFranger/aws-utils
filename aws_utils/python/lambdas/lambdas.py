@@ -15,7 +15,7 @@ class Lambdas(object):
             @wraps(f)
             def wrapper(*args, **kwargs):
                 result = f(*args, **kwargs)
-                return {'statusCode': result.get('ResponseMetadata').get('HTTPStatusCode'), 'body': result}
+                return {'statusCode': result.get('ResponseMetadata').get('HTTPStatusCode'), 'headers': None, 'body': result}
             return wrapper
 
         @classmethod
