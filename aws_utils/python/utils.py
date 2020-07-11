@@ -8,12 +8,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
+# TODO : put in class to make return int changeable
 class DecimalEncoder(json.JSONEncoder):
     """ makes json serialize decimal (for boto3) """
 
     def default(self, o):
         if isinstance(o, decimal.Decimal):
-            return float(o)
+            return int(o)
         return super(DecimalEncoder, self).default(o)
 
 
