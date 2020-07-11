@@ -52,6 +52,9 @@ class Lambdas(object):
                     logger.info('Incoming event : {event}'.format(event=event))
                     if any(re.compile(ip).match(event.get('headers').get('origin')) for ip in ips):
                         kwargs.update({'headers': {'Access-Control-Allow-Origin': event.get('headers').get('origin')}})
+
+                    else:
+                        raise ValueError('{origin} is not cors authorised'.format(origin=event.get('headers').get('origin')))
                     return f(event, *args, **kwargs)
                 return wrapper
             return decorator
