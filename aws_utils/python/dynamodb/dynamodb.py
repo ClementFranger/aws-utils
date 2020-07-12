@@ -11,9 +11,9 @@ class DynamoDB(object):
     __CLIENT__ = boto3.resource('dynamodb')
 
     def __init__(self, **kwargs):
-        if not kwargs.get('DYNAMODB_TABLE'):
-            kwargs.update({'DYNAMODB_TABLE': os.environ['DYNAMODB_TABLE']})
-        self.__TABLE__ = self.__CLIENT__.Table(kwargs.get('DYNAMODB_TABLE'))
+        if not kwargs.get('__DYNAMODB_TABLE__'):
+            kwargs.update({'__DYNAMODB_TABLE__': os.environ['__DYNAMODB_TABLE__']})
+        self.__TABLE__ = self.__CLIENT__.Table(kwargs.get('__DYNAMODB_TABLE__'))
 
     def scan(self, **kwargs):
         logger.info('Getting all items')

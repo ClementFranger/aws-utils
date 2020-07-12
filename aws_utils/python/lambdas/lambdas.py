@@ -25,7 +25,7 @@ class Lambdas(object):
         def payload(cls, id='id'):
             def decorator(f):
                 @wraps(f)
-                def wrapper(event, *args, **kwargs):
+                def wrapper(self, event, *args, **kwargs):
                     logger.info('Received payload : {payload}'.format(payload=event.get('body')))
 
                     body = json.loads(event.get('body')) if event.get('body') else dict()
@@ -37,7 +37,7 @@ class Lambdas(object):
                                    'query': event.get('queryStringParameters')})
 
                     logger.info('Payload have been loaded into kwargs : {kwargs}'.format(kwargs=kwargs))
-                    return f(event, *args, **kwargs)
+                    return f(self, event, *args, **kwargs)
                 return wrapper
             return decorator
 
@@ -48,14 +48,14 @@ class Lambdas(object):
 
             def decorator(f):
                 @wraps(f)
-                def wrapper(event, *args, **kwargs):
+                def wrapper(self, event, *args, **kwargs):
                     logger.info('Incoming event : {event}'.format(event=event))
                     if any(re.compile(ip).match(event.get('headers').get('origin')) for ip in ips):
                         kwargs.update({'headers': {'Access-Control-Allow-Origin': event.get('headers').get('origin')}})
 
                     else:
                         raise ValueError('{origin} is not cors authorised'.format(origin=event.get('headers').get('origin')))
-                    return f(event, *args, **kwargs)
+                    return f(self, event, *args, **kwargs)
                 return wrapper
             return decorator
 
