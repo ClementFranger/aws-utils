@@ -22,3 +22,8 @@ class LambdasDynamoDB(Lambdas):
     @Lambdas.Decorators.payload(id='_id')
     def put(self, *args, **kwargs):
         return self.__DYNAMODB__.put(Item=kwargs.get('body'))
+
+    @Lambdas.Decorators.cors(ips=[r"^https://master\..+\.amplifyapp\.com$", r"^http://localhost:3000$"])
+    @Lambdas.Decorators.payload(id=None, load=False)
+    def batch_put(self, *args, **kwargs):
+        return self.__DYNAMODB__.batch_put(Items=kwargs.get('body'))

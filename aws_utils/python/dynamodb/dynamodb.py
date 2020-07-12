@@ -38,3 +38,10 @@ class DynamoDB(object):
 
         logger.info('Retrieved item {key}'.format(key=kwargs.get('Key')))
         return result
+
+    def batch_put(self, **kwargs):
+        logger.info('Creating batch')
+        with self.__TABLE__.batch_writer() as batch:
+            [batch.put_item(Item=item) for item in kwargs.get('Items')]
+
+        logger.info('Created batch')

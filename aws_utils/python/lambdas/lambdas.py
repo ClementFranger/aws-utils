@@ -22,16 +22,18 @@ class Lambdas(object):
             return wrapper
 
         @classmethod
-        def payload(cls, id='id'):
+        def payload(cls, id='id', load=True):
             def decorator(f):
                 @wraps(f)
                 def wrapper(self, event, *args, **kwargs):
                     logger.info('Received payload : {payload}'.format(payload=event.get('body')))
 
-                    body = json.loads(event.get('body')) if event.get('body') else dict()
-                    if body and not body.get(id):
+                    body = event.get('body')
+                    if load:
+                        body = json.loads(body) if body else dict()
+                    if body and id and not body.get(id):
                         raise ValueError('You should provide a {id} key to your body'.format(id=id))
-                    if event.get('pathParameters') and not event.get('pathParameters').get(id):
+                    if event.get('pathParameters') and id and not event.get('pathParameters').get(id):
                         raise ValueError('You should provide a {id} key to your pathParameters'.format(id=id))
                     kwargs.update({'body': body, 'path': event.get('pathParameters'),
                                    'query': event.get('queryStringParameters')})
