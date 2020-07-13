@@ -10,6 +10,7 @@ logger.setLevel(logging.INFO)
 class Dofapi(object):
     __ID__ = '_id'
     __ANKAMA_ID__ = 'ankamaId'
+    __NAME__ = 'name'
 
     __DOFAPI_API_ = 'https://fr.dofus.dofapi.fr/'
     __CONSUMABLES__ = 'consumables'
