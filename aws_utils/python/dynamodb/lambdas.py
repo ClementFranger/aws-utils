@@ -21,6 +21,7 @@ class LambdasDynamoDB(Lambdas):
     @Lambdas.Decorators.output
     @Lambdas.Decorators.payload(id='_id')
     def put(self, *args, **kwargs):
+        print('salut')
         return self.__DYNAMODB__.put(Item=kwargs.get('body'))
 
     @Lambdas.Decorators.cors(ips=[r"^https://master\..+\.amplifyapp\.com$", r"^http://localhost:3000$"])
