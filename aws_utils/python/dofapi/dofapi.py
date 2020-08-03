@@ -1,13 +1,10 @@
 from functools import wraps
 
 import requests
-import requests_cache
 import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-requests_cache.install_cache('dofapi_cache', expire_after=60*60*24*7)
 
 
 class Dofapi(object):
