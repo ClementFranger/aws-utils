@@ -31,59 +31,34 @@ class Dofapi(object):
             return wrapper
 
     def _scan(self, *args, **kwargs):
-        endpoint = kwargs.get('endpoint', self.__RESOURCES__)
+        endpoint, unique = kwargs.get('endpoint', self.__RESOURCES__), kwargs.get('unique', False)
 
         logger.info('Getting all {endpoint}'.format(endpoint=endpoint))
 
         result = requests.get(self.__DOFAPI_API_ + endpoint, *args)
 
         logger.info('Retrieved {endpoint}'.format(endpoint=endpoint))
-        return result
+        return list({v[self.__ID__]: v for v in result}.values()) if unique else result
 
     @Decorators.output
     def scan_consumables(self, *args, **kwargs):
-        # logger.info('Getting all consumables')
-        #
-        # result = requests.get(self.__DOFAPI_API_ + self.__CONSUMABLES__, *args, **kwargs)
-        #
-        # logger.info('Retrieved all consumables')
-        return self._scan(endpoint=self.__CONSUMABLES__)
+        return self._scan(endpoint=self.__CONSUMABLES__, *args, **kwargs)
 
     @Decorators.output
     def scan_equipments(self, *args, **kwargs):
-        # logger.info('Getting all equipments')
-        #
-        # result = requests.get(self.__DOFAPI_API_ + self.__EQUIPMENTS__, *args, **kwargs)
-        #
-        # logger.info('Retrieved all equipments')
-        return self._scan(endpoint=self.__EQUIPMENTS__)
+        return self._scan(endpoint=self.__EQUIPMENTS__, *args, **kwargs)
 
     @Decorators.output
     def scan_idols(self, *args, **kwargs):
-        # logger.info('Getting all idols')
-        #
-        # result = requests.get(self.__DOFAPI_API_ + self.__IDOLS__, *args, **kwargs)
-        #
-        # logger.info('Retrieved all idols')
-        return self._scan(endpoint=self.__IDOLS__)
+        return self._scan(endpoint=self.__IDOLS__, *args, **kwargs)
 
     @Decorators.output
     def scan_resources(self, *args, **kwargs):
-        # logger.info('Getting all resources')
-        #
-        # result = requests.get(self.__DOFAPI_API_ + self.__RESOURCES__, *args, **kwargs)
-        #
-        # logger.info('Retrieved all resources')
-        return self._scan(endpoint=self.__RESOURCES__)
+        return self._scan(endpoint=self.__RESOURCES__, *args, **kwargs)
 
     @Decorators.output
     def scan_weapons(self, *args, **kwargs):
-        # logger.info('Getting all weapons')
-        #
-        # result = requests.get(self.__DOFAPI_API_ + self.__WEAPONS__, *args, **kwargs)
-        #
-        # logger.info('Retrieved all weapons')
-        return self._scan(endpoint=self.__WEAPONS__)
+        return self._scan(endpoint=self.__WEAPONS__, *args, **kwargs)
 
     def _scan_items(self, *args, **kwargs):
         unique = kwargs.get('unique', False)
