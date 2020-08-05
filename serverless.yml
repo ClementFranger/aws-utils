@@ -6,9 +6,9 @@ package:
 provider:
   name: aws
   runtime: python3.7
-  stage: master
+  stage: dev
   region: eu-west-3
 
 layers:
-  aws-utils-master:
+  aws-utils-dev:
     path: aws_utils
