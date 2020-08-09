@@ -18,15 +18,15 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
-# def request(f):
-#     @wraps(f)
-#     def wrapper(self, *args, **kwargs):
-#         try:
-#             response = f(self, *args, **kwargs)
-#         except Exception as e:
-#             raise e
-#         return response
-#     return wrapper
+class Schema(object):
+
+    @classmethod
+    def keys(cls):
+        return [k for k in vars(cls) if not k.startswith('__')]
+
+    @classmethod
+    def values(cls):
+        return [getattr(cls, k) for k in cls.keys()]
 
 
 def to_json(f):

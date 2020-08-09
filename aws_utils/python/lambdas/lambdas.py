@@ -26,7 +26,7 @@ class Lambdas(object):
             def decorator(f):
                 @wraps(f)
                 def wrapper(self, event, *args, **kwargs):
-                    logger.info('Received payload : {payload}'.format(payload=event.get('body')))
+                    logger.info('Received payload : {payload}'.format(payload=event))
 
                     body = event.get('body')
                     if load:

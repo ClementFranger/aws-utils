@@ -4,6 +4,8 @@ from functools import wraps
 import requests
 import logging
 
+from utils import Schema
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -15,12 +17,12 @@ class Dofapi(object):
 
     __DOFAPI_API_ = 'https://fr.dofus.dofapi.fr/'
 
-    class IDSchema(object):
+    class IDSchema(Schema):
         ID = '_id'
         ANKAMA_ID = 'ankamaId'
         NAME = 'name'
 
-    class APISchema(object):
+    class APISchema(Schema):
         CLASSES = 'classes'
         CONSUMABLES = 'consumables'
         EQUIPMENTS = 'equipments'
@@ -35,7 +37,7 @@ class Dofapi(object):
         SETS = 'sets'
         WEAPONS = 'weapons'
 
-    class WeaponsSchema(object):
+    class WeaponsSchema(Schema):
         ARC = 'Arc'
         EPEE = 'Épée'
         DAGUE = 'Dague'
@@ -49,7 +51,7 @@ class Dofapi(object):
         PIOCHE = 'Pioche'
         PIERRE_AME = "Pierre d'âme"
 
-    class EquipmentsSchema(object):
+    class EquipmentsSchema(Schema):
         AMULETTE = 'Amulette'
         ANNEAU = 'Anneau'
         BOTTES = 'Bottes'
@@ -62,7 +64,7 @@ class Dofapi(object):
         OBJET_VIVANT = 'Objet vivant'
         TROPHEE = 'Trophée'
 
-    class ResourcesSchema(object):
+    class ResourcesSchema(Schema):
         PLANCHE = 'Planche'
         SUBSTRAT = 'Substrat'
         ALLIAGE = 'Alliage'
@@ -72,7 +74,7 @@ class Dofapi(object):
         IDOLE = 'Idole'
         CLEF = 'Clef'
 
-    class ConsumablesSchema(object):
+    class ConsumablesSchema(Schema):
         POTION = 'Potion'
         POTION_TELEPORTATION = 'Potion de téléportation'
         POTION_OUBLI_PERCEPTEUR = 'Potion d\'oubli Percepteur'
@@ -88,11 +90,10 @@ class Dofapi(object):
 
         result = []
         for endpoint in endpoints:
-            logger.info('Getting all {endpoint}'.format(endpoint=endpoint))
+            response = requests.get(self.__DOFAPI_API_ + endpoint, *args).json()
+            result.extend(response)
+            logger.info('Retrieved {count} {endpoint}'.format(count=len(response), endpoint=endpoint))
 
-            result.extend(requests.get(self.__DOFAPI_API_ + endpoint, *args).json())
-
-            logger.info('Retrieved {endpoint}'.format(endpoint=endpoint))
         return list({v[self.Schema.ID]: v for v in result}.values()) if unique else result
 
     def scan_consumables(self, *args, **kwargs):
@@ -111,19 +112,7 @@ class Dofapi(object):
         return self._scan(endpoints=self.APISchema.WEAPONS, *args, **kwargs)
 
     def _scan_items(self, *args, **kwargs):
-        unique = kwargs.get('unique', False)
-        logger.info('Getting all items')
-
-        result = []
-        [result.extend(getattr(self, f)(*args, **kwargs)) for f in dir(self) if f.startswith('scan')]
-
-        if unique:
-            logger.info('length of NON UNIQUE items : %s' % len(result))
-            result = list({v[self.Schema.ID]: v for v in result}.values())
-            logger.info('length of UNIQUE items : %s' % len(result))
-
-        logger.info('Retrieved all items')
-        return result
+        return self._scan(endpoints=self.APISchema.values(), *args, **kwargs)
 
     def _scan_professions(self, *args, **kwargs):
         return self._scan(endpoints=self.APISchema.PROFESSIONS, *args, **kwargs)
