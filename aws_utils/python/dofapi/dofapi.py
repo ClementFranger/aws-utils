@@ -1,6 +1,3 @@
-from enum import Enum
-from functools import wraps
-
 import requests
 import logging
 
@@ -19,6 +16,7 @@ class Dofapi(object):
         ANKAMA_ID = 'ankamaId'
         NAME = 'name'
         RECIPE = 'recipe'
+        TYPE = 'type'
 
     class APISchema(Schema):
         CLASSES = 'classes'
@@ -106,24 +104,3 @@ class Dofapi(object):
 
         result = self._format_recipe(result)
         return list({v[self.Schema.ID]: v for v in result}.values()) if unique else result
-
-    # def scan_consumables(self, *args, **kwargs):
-    #     return self.scan(endpoints=self.APISchema.CONSUMABLES, *args, **kwargs)
-    #
-    # def scan_equipments(self, *args, **kwargs):
-    #     return self.scan(endpoints=self.APISchema.EQUIPMENTS, *args, **kwargs)
-    #
-    # def scan_idols(self, *args, **kwargs):
-    #     return self.scan(endpoints=self.APISchema.IDOLS, *args, **kwargs)
-    #
-    # def scan_resources(self, *args, **kwargs):
-    #     return self.scan(endpoints=self.APISchema.RESOURCES, *args, **kwargs)
-    #
-    # def scan_weapons(self, *args, **kwargs):
-    #     return self.scan(endpoints=self.APISchema.WEAPONS, *args, **kwargs)
-    #
-    # def _scan_items(self, *args, **kwargs):
-    #     return self.scan(endpoints=self.APISchema.values(), *args, **kwargs)
-    #
-    # def _scan_professions(self, *args, **kwargs):
-    #     return self.scan(endpoints=self.APISchema.PROFESSIONS, *args, **kwargs)
