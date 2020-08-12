@@ -11,9 +11,6 @@ logger.setLevel(logging.INFO)
 
 
 class Dofapi(object):
-    # __ID__ = '_id'
-    # __ANKAMA_ID__ = 'ankamaId'
-    # __NAME__ = 'name'
 
     __DOFAPI_API_ = 'https://fr.dofus.dofapi.fr/'
 
@@ -21,6 +18,7 @@ class Dofapi(object):
         ID = '_id'
         ANKAMA_ID = 'ankamaId'
         NAME = 'name'
+        RECIPE = 'recipe'
 
     class APISchema(Schema):
         CLASSES = 'classes'
@@ -73,6 +71,7 @@ class Dofapi(object):
         TEINTURE = 'Teinture'
         IDOLE = 'Idole'
         CLEF = 'Clef'
+        ORBRE_FORGEMAGIE = 'Orbe de forgemagie'
 
     class ConsumablesSchema(Schema):
         POTION = 'Potion'
@@ -84,35 +83,47 @@ class Dofapi(object):
     class Schema(IDSchema, APISchema, WeaponsSchema, EquipmentsSchema, ResourcesSchema, ConsumablesSchema):
         pass
 
-    def _scan(self, *args, **kwargs):
+    def _format_recipe(self, items):
+        for i in items:
+            recipe = []
+            for r in i.get(self.IDSchema.RECIPE, []):
+                recipe.append({**next(iter(r.values())), **{self.IDSchema.NAME: next(iter(r.keys()))}})
+            i[self.IDSchema.RECIPE] = recipe
+        return items
+
+    def scan(self, *args, **kwargs):
         endpoints, unique = kwargs.get('endpoints'), kwargs.get('unique', False)
         endpoints = endpoints if isinstance(endpoints, list) else [endpoints]
 
         result = []
         for endpoint in endpoints:
-            response = requests.get(self.__DOFAPI_API_ + endpoint, *args).json()
+            if endpoint not in self.APISchema.values():
+                logger.warning('Skipped {endpoint} call because it is not valid. Valid endpoints are : {endpoints}'.format(endpoint=endpoint, endpoints=', '.join(self.APISchema.values())))
+                continue
+            response = requests.get(self.__DOFAPI_API_ + endpoint).json()
             result.extend(response)
             logger.info('Retrieved {count} {endpoint}'.format(count=len(response), endpoint=endpoint))
 
+        result = self._format_recipe(result)
         return list({v[self.Schema.ID]: v for v in result}.values()) if unique else result
 
-    def scan_consumables(self, *args, **kwargs):
-        return self._scan(endpoints=self.APISchema.CONSUMABLES, *args, **kwargs)
-
-    def scan_equipments(self, *args, **kwargs):
-        return self._scan(endpoints=self.APISchema.EQUIPMENTS, *args, **kwargs)
-
-    def scan_idols(self, *args, **kwargs):
-        return self._scan(endpoints=self.APISchema.IDOLS, *args, **kwargs)
-
-    def scan_resources(self, *args, **kwargs):
-        return self._scan(endpoints=self.APISchema.RESOURCES, *args, **kwargs)
-
-    def scan_weapons(self, *args, **kwargs):
-        return self._scan(endpoints=self.APISchema.WEAPONS, *args, **kwargs)
-
-    def _scan_items(self, *args, **kwargs):
-        return self._scan(endpoints=self.APISchema.values(), *args, **kwargs)
-
-    def _scan_professions(self, *args, **kwargs):
-        return self._scan(endpoints=self.APISchema.PROFESSIONS, *args, **kwargs)
+    # def scan_consumables(self, *args, **kwargs):
+    #     return self.scan(endpoints=self.APISchema.CONSUMABLES, *args, **kwargs)
+    #
+    # def scan_equipments(self, *args, **kwargs):
+    #     return self.scan(endpoints=self.APISchema.EQUIPMENTS, *args, **kwargs)
+    #
+    # def scan_idols(self, *args, **kwargs):
+    #     return self.scan(endpoints=self.APISchema.IDOLS, *args, **kwargs)
+    #
+    # def scan_resources(self, *args, **kwargs):
+    #     return self.scan(endpoints=self.APISchema.RESOURCES, *args, **kwargs)
+    #
+    # def scan_weapons(self, *args, **kwargs):
+    #     return self.scan(endpoints=self.APISchema.WEAPONS, *args, **kwargs)
+    #
+    # def _scan_items(self, *args, **kwargs):
+    #     return self.scan(endpoints=self.APISchema.values(), *args, **kwargs)
+    #
+    # def _scan_professions(self, *args, **kwargs):
+    #     return self.scan(endpoints=self.APISchema.PROFESSIONS, *args, **kwargs)

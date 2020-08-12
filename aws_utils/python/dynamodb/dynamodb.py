@@ -8,35 +8,25 @@ logger.setLevel(logging.INFO)
 
 
 class DynamoDB(object):
+    _TABLE_NAME = None
     __CLIENT__ = boto3.resource('dynamodb')
 
     def __init__(self, **kwargs):
-        if not kwargs.get('__DYNAMODB_TABLE__'):
-            kwargs.update({'__DYNAMODB_TABLE__': os.environ['__DYNAMODB_TABLE__']})
-        self.__TABLE__ = self.__CLIENT__.Table(kwargs.get('__DYNAMODB_TABLE__'))
+        self.__TABLE__ = self.__CLIENT__.Table(kwargs.get('_TABLE_NAME', self._TABLE_NAME))
 
     def scan(self, **kwargs):
-        logger.info('Getting all items')
-
-        result = self.__TABLE__.scan(**kwargs)
-
-        logger.info('Retrieved all items')
+        result = self.__TABLE__.scan()
+        logger.info('Retrieved {count} items from {table} table'.format(count=result.get('Count'), table=self._TABLE_NAME))
         return result
 
     def put(self, **kwargs):
-        logger.info('Creating item {item}'.format(item=kwargs.get('Item')))
-
         result = self.__TABLE__.put_item(**kwargs)
-
-        logger.info('Created item {item}'.format(item=kwargs.get('Item')))
+        logger.info('Created item {item} to {table} table'.format(item=kwargs.get('Item'), table=self._TABLE_NAME))
         return result
 
     def get(self, **kwargs):
-        logger.info('Getting item {key}'.format(key=kwargs.get('Key')))
-
         result = self.__TABLE__.get_item(**kwargs)
-
-        logger.info('Retrieved item {key}'.format(key=kwargs.get('Key')))
+        logger.info('Retrieved item {key} from {table} table'.format(key=kwargs.get('Key'), table=self._TABLE_NAME))
         return result
 
     def batch_put(self, **kwargs):
