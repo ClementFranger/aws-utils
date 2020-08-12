@@ -17,6 +17,7 @@ class Dofapi(object):
         NAME = 'name'
         RECIPE = 'recipe'
         TYPE = 'type'
+        QUANTITY = 'quantity'
 
     class APISchema(Schema):
         CLASSES = 'classes'
